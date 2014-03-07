@@ -22,7 +22,9 @@ module Forceps
     end
 
     def model_classes
-      @model_classes ||= ActiveRecord::Base.descendants - model_classes_to_exclude
+      @model_classes ||= ObjectSpace.each_object(Class).select do |klass|
+        klass.ancestors.include?(ActiveRecord::Base)
+      end - model_classes_to_exclude
     end
 
     def model_classes_to_exclude
