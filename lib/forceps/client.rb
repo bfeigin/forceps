@@ -28,7 +28,7 @@ module Forceps
     end
 
     def model_classes_to_exclude
-      []
+      [ActiveRecord::Base, Class]
     end
 
     def declare_remote_model_classes
@@ -45,7 +45,7 @@ module Forceps
     end
 
     def build_new_remote_class(local_class, class_name)
-      needs_type_condition = (local_class.base_class != ActiveRecord::Base) && local_class.finder_needs_type_condition?
+      needs_type_condition = false && (local_class.base_class != ActiveRecord::Base) && local_class.finder_needs_type_condition?
       Class.new(local_class) do
         self.table_name = local_class.table_name
 
