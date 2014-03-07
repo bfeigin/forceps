@@ -27,7 +27,7 @@ module Forceps
       def initialize(options)
         @copied_remote_objects = {}
         @reused_local_objects = Set.new
-        @options = options
+        @options = options || {}
         @level = 0
       end
 
@@ -109,7 +109,11 @@ module Forceps
 
         cloned_object = base_class.new
         copy_attributes(cloned_object, simple_attributes_to_copy(remote_object))
-        cloned_object.save!(validate: false)
+        begin
+          cloned_object.save!(validate: false)
+        rescue Exception => e
+          debug e
+        end
         invoke_callbacks(:after_each, cloned_object, remote_object)
         cloned_object
       end
@@ -179,7 +183,11 @@ module Forceps
         debug "#{as_trace(source_remote_object)} reusing..."
         # update_columns skips callbacks too but not available in Rails 3
         copy_attributes(target_local_object, simple_attributes_to_copy(source_remote_object))
-        target_local_object.save!(validate: false)
+        begin
+          target_local_object.save!(validate: false)
+        rescue Exception => e
+          debug e
+        end
       end
 
       def logger
@@ -239,7 +247,11 @@ module Forceps
       def copy_associated_objects_in_has_one(local_object, remote_object, association_name)
         remote_associated_object = remote_object.send(association_name)
         local_object.send "#{association_name}=", remote_associated_object && copy(remote_associated_object)
-        local_object.save!(validate: false)
+        begin
+          local_object.save!(validate: false)
+        rescue Exception => e
+          debug e
+        end
       end
 
       def copy_associated_objects_in_belongs_to(local_object, remote_object, association_name)
