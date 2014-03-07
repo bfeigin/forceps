@@ -75,7 +75,7 @@ module Forceps
     end
 
     def remote_class_for(class_name)
-      Forceps::Remote::const_get(remote_class_name_for(class_name))
+      class_name.split('::').inject(Forceps::Remote){|init, ag| init::const_get(ag)}
     end
 
     def make_associations_reference_remote_classes
