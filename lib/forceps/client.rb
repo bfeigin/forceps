@@ -26,11 +26,7 @@ module Forceps
     end
 
     def model_classes_to_exclude
-      if Rails::VERSION::MAJOR >= 4
-        [ActiveRecord::SchemaMigration]
-      else
-        []
-      end
+      []
     end
 
     def declare_remote_model_classes
@@ -54,16 +50,9 @@ module Forceps
         include Forceps::ActsAsCopyableModel
 
         # Intercep intantiation of records to make the 'type' column point to the corresponding remote class
-        if Rails::VERSION::MAJOR >= 4
-          def self.instantiate(record, column_types = {})
-            __make_sti_column_point_to_forceps_remote_class(record)
-            super
-          end
-        else
-          def self.instantiate(record)
-            __make_sti_column_point_to_forceps_remote_class(record)
-            super
-          end
+        def self.instantiate(record)
+          __make_sti_column_point_to_forceps_remote_class(record)
+          super
         end
 
         def self.__make_sti_column_point_to_forceps_remote_class(record)
